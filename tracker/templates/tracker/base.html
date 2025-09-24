@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Budget Tracker{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>Budget Tracker</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'transaction-list' %}">Transactions</a></li>
+                <li><a href="{% url 'category-list' %}">Categories</a></li>
+                <li><a href="{% url 'analytics-home' %}">Analytics</a></li>
+            </ul>
+        </nav>
+        <hr>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+    </main>
+</body>
+</html>
