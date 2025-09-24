@@ -1,0 +1,22 @@
+<!-- <h1>Home Page</h1>
+<p>This is a placeholder.</p> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Tracker - Home</title>
+</head>
+<body>
+    <h1>Welcome to Budget Tracker</h1>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'transaction-list' %}">Transactions</a></li>
+            <li><a href="{% url 'category-list' %}">Categories</a></li>
+            <li><a href="{% url 'analytics-home' %}">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <p>Select an option from above to get started.</p>
+</body>
+</html>
