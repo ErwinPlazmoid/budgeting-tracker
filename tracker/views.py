@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Transaction
 
 # Home
 class HomeView(TemplateView):
@@ -7,17 +9,38 @@ class HomeView(TemplateView):
 
 
 # Transactions
-class TransactionListView(TemplateView):
+class TransactionListView(ListView):
+    model = Transaction
     template_name = "tracker/transactions/list.html"
+    context_object_name = "transactions"
 
-class TransactionCreateView(TemplateView):
+    def get_querry_set(self):
+        # For now: return ALL transactions
+        # Later: filter by self.request.user
+        return Transaction.objects.all().order_by("-date__full_date")
+
+class TransactionCreateView(CreateView):
+    model = Transaction
     template_name = "tracker/transactions/add.html"
+    fields = ["date", "category", "description", "amount"]
+    success_url = reverse_lazy("transaction-list")
 
-class TransactionUpdateView(TemplateView):
+    def form_valid(self, form):
+        # Later, tie to logged-in user.
+        # For now: just pick the first user in DB.
+        form.instance.user_id = 1
+        return super().form_valid(form)
+
+class TransactionUpdateView(UpdateView):
+    model = Transaction
     template_name = "tracker/transactions/edit.html"
+    fields = ["date", "category", "description", "amount"]
+    success_url = reverse_lazy("transaction-list")
 
-class TransactionDeleteView(TemplateView):
+class TransactionDeleteView(DeleteView):
+    model = Transaction
     template_name = "tracker/transactions/delete.html"
+    success_url = reverse_lazy("transaction-list")
 
 
 # Categories

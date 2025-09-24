@@ -1,2 +1,15 @@
-<h1>Transactions Edit Page</h1>
-<p>This is a placeholder.</p>
+{% extends "tracker/base.html" %}
+
+{% block title %}Edit Transaction{% endblock %}
+
+{% block content %}
+    <h2>Edit Transaction</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <p><a href="{% url 'transaction-list' %}">Back to transactions</a></p>
+{% endblock %}

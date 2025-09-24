@@ -4,7 +4,31 @@
 
 {% block content %}
     <h2>Transactions</h2>
-    <p>...</p>
+    <p><a href="{% url 'transaction-add' %}">➕ Add Transaction</a></p>
+
+    {% if transactions %}
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.date.full_date }}</td>
+                <td>{{ t.category.name }}</td>
+                <td>{{ t.description }}</td>
+                <td>{{ t.amount }}</td>
+                <td>
+                    <a href="{% url 'transaction-edit' t.pk %}">✏️ Edit</a> |
+                    <a href="{% url 'transaction-delete' t.pk %}">🗑 Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No transactions yet. <a href="{% url 'transaction-add' %}">Add one</a></p>
+    {% endif %}
 {% endblock %}
-<h1>Transactions List Page</h1>
-<p>This is a placeholder.</p>
