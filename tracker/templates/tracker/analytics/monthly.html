@@ -1,2 +1,10 @@
-<h1>Analytics Monthly Page</h1>
-<p>This is a placeholder.</p>
+{% extends "tracker/base.html" %}
+
+{% block title %}Analytics - Monthly Trends{% endblock %}
+
+{% block content %}
+    <h2>Monthly Trends</h2>
+    <p>[Monthly income/expense trends will go here]</p>
+
+    <p><a href="{% url 'analytics-home' %}">⬅ Back to Analytics Home</a></p>
+{% endblock %}

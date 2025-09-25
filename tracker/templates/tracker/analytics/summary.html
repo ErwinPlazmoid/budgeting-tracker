@@ -1,2 +1,15 @@
-<h1>Analytics Summary Page</h1>
-<p>This is a placeholder.</p>
+{% extends "tracker/base.html" %}
+
+{% block title %}Analytics - Summary{% endblock %}
+
+{% block content %}
+    <h2>Summary Report</h2>
+
+    <ul>
+        <li><strong>Total Income:</strong> {{ income }}</li>
+        <li><strong>Total Expenses:</strong> {{ expenses }}</li>
+        <li><strong>Net Balance:</strong> {{ balance }}</li>
+    </ul>
+
+    <p><a href="{% url 'analytics-home' %}">⬅ Back to Analytics Home</a></p>
+{% endblock %}

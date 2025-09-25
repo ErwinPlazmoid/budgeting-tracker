@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Transaction, Category
+from django.db.models import Sum, Q
 
 # Home
 class HomeView(TemplateView):
@@ -73,6 +74,26 @@ class AnalyticsHomeView(TemplateView):
 
 class AnalyticsSummaryView(TemplateView):
     template_name = "tracker/analytics/summary.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        #Agg totals
+        totals = Transaction.objects.aggregate(
+            total_income = Sum("amount", filter = Q(amount__gt=0)),
+            total_expenses = Sum("amount", filter = Q(amount__lt=0)),
+        )
+
+        income = totals["total_income"] or 0
+        expenses = totals["total_expenses"] or 0
+        expenses = abs(expenses)
+        balance = income - expenses
+
+        context.update({
+            "income":income,
+            "expenses":expenses,
+            "balance":balance
+        })
+        return context
 
 class AnalyticsMonthlyView(TemplateView):
     template_name = "tracker/analytics/monthly.html"

@@ -1,10 +1,13 @@
 {% extends "tracker/base.html" %}
 
-{% block title %}Analytics - Budget Tracker{% endblock %}
+{% block title %}Analytics Home{% endblock %}
 
 {% block content %}
-    <h2>Analytics</h2>
-    <p>...</p>
+    <h2>Analytics Dashboard</h2>
+    <p>Choose a report:</p>
+    <ul>
+        <li><a href="{% url 'analytics-summary' %}">Summary (Income vs Expenses)</a></li>
+        <li><a href="{% url 'analytics-categories' %}">Breakdown by Category</a></li>
+        <li><a href="{% url 'analytics-monthly' %}">Monthly Trends</a></li>
+    </ul>
 {% endblock %}
-<h1>Analytics Home Page</h1>
-<p>This is a placeholder.</p>
