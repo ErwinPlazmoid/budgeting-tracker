@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Transaction
+from .models import Transaction, Category
 
 # Home
 class HomeView(TemplateView):
@@ -44,17 +44,27 @@ class TransactionDeleteView(DeleteView):
 
 
 # Categories
-class CategoryListView(TemplateView):
+class CategoryListView(ListView):
+    model = Category
     template_name = "tracker/categories/list.html"
+    context_object_name = "categories"
 
-class CategoryCreateView(TemplateView):
+class CategoryCreateView(CreateView):
+    model = Category
     template_name = "tracker/categories/add.html"
+    fields = ["name"]
+    success_url = reverse_lazy("category-list")
 
-class CategoryUpdateView(TemplateView):
+class CategoryUpdateView(UpdateView):
+    model = Category
     template_name = "tracker/categories/edit.html"
+    fields = ["name"]
+    success_url = reverse_lazy("category-list")
 
-class CategoryDeleteView(TemplateView):
+class CategoryDeleteView(DeleteView):
+    model = Category
     template_name = "tracker/categories/delete.html"
+    success_url = reverse_lazy("category-list")
 
 
 # Analytics

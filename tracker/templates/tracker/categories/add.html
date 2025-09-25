@@ -1,2 +1,15 @@
-<h1>Categories Add Page</h1>
-<p>This is a placeholder.</p>
+{% extends "tracker/base.html" %}
+
+{% block title %}Add Category{% endblock %}
+
+{% block content %}
+    <h2>Add Category</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+    <p><a href="{% url 'category-list' %}">Back to categories</a></p>
+{% endblock %}
