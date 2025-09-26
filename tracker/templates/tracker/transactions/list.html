@@ -20,7 +20,13 @@
                 <td>{{ t.date.full_date }}</td>
                 <td>{{ t.category.name }}</td>
                 <td>{{ t.description }}</td>
-                <td>{{ t.amount }}</td>
+                <td>
+                    {% if t.type == "income" %}
+                        <span style="color: green;">{{ t.signed_amount }}</span>
+                    {% else %}
+                        <span style="color: red;">{{ t.signed_amount }}</span>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'transaction-edit' t.pk %}">✏️ Edit</a> |
                     <a href="{% url 'transaction-delete' t.pk %}">🗑 Delete</a>

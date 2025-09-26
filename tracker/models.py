@@ -36,4 +36,9 @@ class Transaction(models.Model):
     type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES, default=EXPENSE)
 
     def __str__(self):
-        return f"{self.date.full_date} | {self.category} | {self.amount}"
+        return f"{self.date.full_date} | {self.get_type_display()} | {self.category} | {self.amount}"
+
+    def signed_amount(self):
+        if self.type == "income":
+            return f"+{abs(self.amount)}"
+        return f"-{abs(self.amount)}"

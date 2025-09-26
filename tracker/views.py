@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 from django.urls import reverse_lazy
 from .models import Transaction, Category
 from django.db.models import Sum, Q
-# from .forms.transaction_form import TransactionForm
+from tracker.forms.transaction_form import TransactionForm
 
 # Home
 class HomeView(TemplateView):
@@ -23,8 +23,8 @@ class TransactionListView(ListView):
 
 class TransactionCreateView(CreateView):
     model = Transaction
+    form_class = TransactionForm
     template_name = "tracker/transactions/add.html"
-    fields = ["date", "category", "description", "amount"]
     success_url = reverse_lazy("transaction-list")
 
     def form_valid(self, form):
@@ -35,8 +35,8 @@ class TransactionCreateView(CreateView):
 
 class TransactionUpdateView(UpdateView):
     model = Transaction
+    form_class = TransactionForm
     template_name = "tracker/transactions/edit.html"
-    fields = ["date", "category", "description", "amount"]
     success_url = reverse_lazy("transaction-list")
 
 class TransactionDeleteView(DeleteView):

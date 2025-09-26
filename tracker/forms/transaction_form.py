@@ -1,11 +1,17 @@
 from django import forms
 from tracker.models import Transaction
-from core.constants import INCOME, EXPENSE
+from core.constants import INCOME, EXPENSE, TRANSACTION_TYPE_CHOICES
 
 class TransactionForm(forms.ModelForm):
+    type = forms.ChoiceField(
+        choices=TRANSACTION_TYPE_CHOICES, 
+        widget=forms.RadioSelect
+        )
+
     class Meta:
         model = Transaction
-        fields = "__all__"
+        fields = ["date", "category", "description", "amount", "type"]
+        widgets = {"type": forms.RadioSelect(choices=TRANSACTION_TYPE_CHOICES)}
 
     def clean_amount(self):
         amount = self.cleaned_data.get("amount")
@@ -13,14 +19,18 @@ class TransactionForm(forms.ModelForm):
 
         if amount == 0:
             raise forms.ValidationError("Amount cannot be zero.")
-        
-        if (t_type == INCOME and amount < 0) or (t_type == EXPENSE and amount > 0):
-            raise forms.ValidationError("Amount sign does not match transaction type.")
+
+        # Auto-normalize sign
+        if t_type == INCOME:
+            return abs(amount)  # always positive
+
+        elif t_type == EXPENSE:
+            return -abs(amount)  # always negative
 
         return amount
 
     def clean_description(self):
         description = self.cleaned_data.get("description")
-        if not description.stip():
+        if not description.strip():
             raise forms.ValidationError("Description cannot be empty.")
         return description
