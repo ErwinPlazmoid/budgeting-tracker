@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from core.constants import INCOME, EXPENSE, TRANSACTION_TYPE_CHOICES
 
 # Create your models here.
 
@@ -32,7 +32,8 @@ class Transaction(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     date = models.ForeignKey(Date, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=False)
+    type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES, default=EXPENSE)
 
     def __str__(self):
         return f"{self.date.full_date} | {self.category} | {self.amount}"
