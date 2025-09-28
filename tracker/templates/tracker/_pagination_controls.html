@@ -13,8 +13,8 @@
 {% if page_obj.paginator.num_pages > 1 %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?page=1&page_size={{ request.GET.page_size }}">« First</a>
-        <a href="?page={{ page_obj.previous_page_number }}&page_size={{ request.GET.page_size }}">‹ Prev</a>
+        <a href="?page=1&{{ querystring }}">« First</a>
+        <a href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">‹ Prev</a>
     {% endif %}
 
     <span>
@@ -23,8 +23,8 @@
     </span>
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&page_size={{ request.GET.page_size }}">Next ›</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}&page_size={{ request.GET.page_size }}">Last »</a>
+        <a href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Next ›</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&{{ querystring }}">Last »</a>
     {% endif %}
 </div>
 {% endif %}

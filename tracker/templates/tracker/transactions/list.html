@@ -4,7 +4,7 @@
 
 {% block content %}
     <h2>Transactions</h2>
-
+    {% include "tracker/_filters.html" %}
     <p><a href="{% url 'transaction-add' %}">➕ Add Transaction</a></p>
 
     {% if transactions %}

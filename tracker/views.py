@@ -15,13 +15,52 @@ class TransactionListView(ListView):
     model = Transaction
     template_name = "tracker/transactions/list.html"
     context_object_name = "transactions"
-    ordering = ['-date__full_date']
     paginate_by = 10
 
-    def get_querry_set(self):
-        # For now: return ALL transactions
-        # Later: filter by self.request.user
-        return Transaction.objects.all().order_by("-date__full_date")
+    def get_queryset(self):
+        qs = Transaction.objects.all()
+
+        # Sorting
+        sort = self.request.GET.get("sort")
+        allowed_sorts = {
+            "date": "date__full_date",
+            "-date": "-date__full_date",
+            "amount": "amount",
+            "-amount": "-amount"
+        }
+        if sort in allowed_sorts:
+            qs = qs.order_by(allowed_sorts[sort])
+        else:
+            qs = qs.order_by("-date__full_date")
+
+        # Filter by category
+        category_id = self.request.GET.get("category")
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+
+        # Filter by date
+        start_date = self.request.GET.get("start_date")
+        end_date = self.request.GET.get("end_date")
+        if start_date:
+            qs = qs.filter(date__full_date__gte=start_date)
+        if end_date:
+            qs = qs.filter(date__full_date__lte=end_date)
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.all()
+
+        # Keep current filters/sort in querystring (except page)
+        params = self.request.GET.copy()
+        if "page" in params:
+            params.pop("page")  # prevent multiple page params
+        if "sort" in params:
+            params.pop("sort")  # prevent duplicate sort params
+        context["querystring"] = params.urlencode()
+
+        return context
 
     def get_paginate_by(self, queryset):
         # Get "page_size" from query params (?page_size=20)
@@ -59,7 +98,6 @@ class CategoryListView(ListView):
     model = Category
     template_name = "tracker/categories/list.html"
     context_object_name = "categories"
-    ordering = ["name"]
     paginate_by = 10
 
     def get_queryset(self):

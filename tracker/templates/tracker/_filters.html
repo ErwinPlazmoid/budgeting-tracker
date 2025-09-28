@@ -1,0 +1,35 @@
+<!-- Sorting controls -->
+<p>
+    Sort by:
+    <a href="?sort=amount&{{ querystring }}">Sort by Amount ↑</a>
+    <a href="?sort=-amount&{{ querystring }}">Sort by Amount ↓</a>
+    <a href="?sort=date&{{ querystring }}">Sort by Date ↑</a>
+    <a href="?sort=-date&{{ querystring }}">Sort by Date ↓</a>
+</p>
+
+<!-- Filtering form -->
+<form method="get" style="margin-bottom: 1em;">
+    <!-- Keep sorting when filtering -->
+    {% if request.GET.sort %}
+        <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+    {% endif %}
+    {% if request.GET.page_size %}
+        <input type="hidden" name="page_size" value="{{ request.GET.page_size }}">
+    {% endif %}
+
+    <label for="category">Category:</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+        <option value="">-- All --</option>
+        {% for c in categories %}
+            <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="start_date">From:</label>
+    <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+
+    <label for="end_date">To:</label>
+    <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+
+    <button type="submit">Filter</button>
+</form>
