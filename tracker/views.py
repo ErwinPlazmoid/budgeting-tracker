@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.contrib import messages
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Transaction, Category
 from django.db.models import Sum, Q
 from tracker.forms.transaction_form import TransactionForm
+from .mixins import MessageDeleteMixin, MessageCreateUpdateMixin
 
 # Home
 class HomeView(TemplateView):
@@ -69,11 +71,13 @@ class TransactionListView(ListView):
             return int(page_size)
         return 10  # default
 
-class TransactionCreateView(CreateView):
+
+class TransactionCreateView(MessageCreateUpdateMixin, CreateView):
     model = Transaction
     form_class = TransactionForm
     template_name = "tracker/transactions/add.html"
     success_url = reverse_lazy("transaction-list")
+    success_message = "✅ Transaction created successfully!"
 
     def form_valid(self, form):
         # Later, tie to logged-in user.
@@ -81,16 +85,23 @@ class TransactionCreateView(CreateView):
         form.instance.user_id = 1
         return super().form_valid(form)
 
-class TransactionUpdateView(UpdateView):
+
+class TransactionUpdateView(MessageCreateUpdateMixin, UpdateView):
     model = Transaction
     form_class = TransactionForm
     template_name = "tracker/transactions/edit.html"
     success_url = reverse_lazy("transaction-list")
+    success_message = "✏️ Transaction updated successfully!"
 
-class TransactionDeleteView(DeleteView):
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+
+class TransactionDeleteView(MessageDeleteMixin, DeleteView):
     model = Transaction
     template_name = "tracker/transactions/delete.html"
     success_url = reverse_lazy("transaction-list")
+    success_message = "🗑 Transaction deleted."
 
 
 # Categories
@@ -106,22 +117,27 @@ class CategoryListView(ListView):
         return Category.objects.all().order_by("name")
 
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(MessageCreateUpdateMixin, CreateView):
     model = Category
     template_name = "tracker/categories/add.html"
     fields = ["name"]
     success_url = reverse_lazy("category-list")
+    success_message = "✅ Category created successfully!"
 
-class CategoryUpdateView(UpdateView):
+
+class CategoryUpdateView(MessageCreateUpdateMixin, UpdateView):
     model = Category
     template_name = "tracker/categories/edit.html"
     fields = ["name"]
     success_url = reverse_lazy("category-list")
+    success_message = "✏️ Category updated successfully!"
 
-class CategoryDeleteView(DeleteView):
+
+class CategoryDeleteView(MessageDeleteMixin, DeleteView):
     model = Category
     template_name = "tracker/categories/delete.html"
     success_url = reverse_lazy("category-list")
+    success_message = "🗑 Category deleted."
 
 
 # Analytics
