@@ -4,6 +4,7 @@
 
 {% block content %}
     <h2>Transactions</h2>
+
     <p><a href="{% url 'transaction-add' %}">➕ Add Transaction</a></p>
 
     {% if transactions %}
@@ -33,8 +34,15 @@
                 </td>
             </tr>
             {% endfor %}
+
+            
+
         </table>
     {% else %}
         <p>No transactions yet. <a href="{% url 'transaction-add' %}">Add one</a></p>
     {% endif %}
+
+    <!-- pagination -->
+    {% include "tracker/_pagination_controls.html" %}
+
 {% endblock %}

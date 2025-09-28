@@ -17,7 +17,14 @@
                 </li>
             {% endfor %}
         </ul>
-    {% else %}
+
+        
+        {% else %}
         <p>No categories yet. <a href="{% url 'category-add' %}">Add one</a></p>
-    {% endif %}
+        {% endif %}
+
+    <!-- pagination -->
+    {% include "tracker/_pagination_controls.html" %} 
+    
 {% endblock %}
+        

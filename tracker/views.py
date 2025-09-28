@@ -15,11 +15,20 @@ class TransactionListView(ListView):
     model = Transaction
     template_name = "tracker/transactions/list.html"
     context_object_name = "transactions"
+    ordering = ['-date__full_date']
+    paginate_by = 10
 
     def get_querry_set(self):
         # For now: return ALL transactions
         # Later: filter by self.request.user
         return Transaction.objects.all().order_by("-date__full_date")
+
+    def get_paginate_by(self, queryset):
+        # Get "page_size" from query params (?page_size=20)
+        page_size = self.request.GET.get("page_size")
+        if page_size in ["10", "20", "50", "100"]:
+            return int(page_size)
+        return 10  # default
 
 class TransactionCreateView(CreateView):
     model = Transaction
@@ -50,6 +59,14 @@ class CategoryListView(ListView):
     model = Category
     template_name = "tracker/categories/list.html"
     context_object_name = "categories"
+    ordering = ["name"]
+    paginate_by = 10
+
+    def get_queryset(self):
+        # For now: return ALL categories
+        # Later: filter by self.request.user
+        return Category.objects.all().order_by("name")
+
 
 class CategoryCreateView(CreateView):
     model = Category
