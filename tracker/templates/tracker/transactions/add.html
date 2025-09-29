@@ -1,16 +1,42 @@
 {% extends "tracker/base.html" %}
-
+{% block extra_head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/transactions.css' %}">
+{% endblock %}
 {% block title %}Add Transaction{% endblock %}
 
 {% block content %}
-    <h2>Add Transaction</h2>
+<h2>Add Transaction</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <!-- {{ form }}   -->
-        <button type="submit">Save</button>
-    </form>
+<form method="post" class="needs-validation" novalidate>
+    {% csrf_token %}
 
-    <p><a href="{% url 'transaction-list' %}">Back to transactions</a></p>
+    <div class="mb-3">
+        <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+        {{ form.raw_date }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+        {{ form.category }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+        {{ form.description }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+        {{ form.amount }}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Type</label>
+        {{ form.type }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'transaction-list' %}" class="btn btn-secondary">Back</a>
+</form>
 {% endblock %}

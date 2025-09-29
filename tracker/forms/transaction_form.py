@@ -1,5 +1,5 @@
 from django import forms
-from tracker.models import Transaction
+from tracker.models import Transaction, Date
 from core.constants import INCOME, EXPENSE, TRANSACTION_TYPE_CHOICES
 
 class TransactionForm(forms.ModelForm):
@@ -8,9 +8,21 @@ class TransactionForm(forms.ModelForm):
         widget=forms.RadioSelect
         )
 
+    raw_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        input_formats=["%Y-%m-%d"],
+        label="Date",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        if self.instance and self.instance.pk:
+            self.fields["raw_date"].initial = self.instance.date.full_date
+
     class Meta:
         model = Transaction
-        fields = ["date", "category", "description", "amount", "type"]
+        fields = ["raw_date", "category", "description", "amount", "type"]
         widgets = {"type": forms.RadioSelect(choices=TRANSACTION_TYPE_CHOICES)}
 
     def clean_amount(self):
@@ -34,3 +46,23 @@ class TransactionForm(forms.ModelForm):
         if not description.strip():
             raise forms.ValidationError("Description cannot be empty.")
         return description
+
+    def save(self, commit=True):
+        # get the cleaned date from the HTML input
+        raw_date = self.cleaned_data["raw_date"]
+
+        # map to date dimension
+        date_obj, _ = Date.objects.get_or_create(
+            full_date=raw_date,
+            defaults={
+                "year": raw_date.year,
+                "month": raw_date.month,
+                "day": raw_date.day,
+                "weekday": raw_date.strftime("%A"),
+                "quarter": (raw_date.month - 1) // 3 + 1,
+            },
+        )
+
+        # replace raw date with date dimension object
+        self.instance.date = date_obj
+        return super().save(commit=commit)

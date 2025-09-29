@@ -7,10 +7,48 @@
 
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <!-- {{ form }} -->
-        <button type="submit">Save Changes</button>
-    </form>
 
-    <p><a href="{% url 'transaction-list' %}">Back to transactions</a></p>
+        <div class="mb-3">
+            <label for="{{ form.raw_date.id_for_label }}" class="form-label">Date</label>
+            {{ form.raw_date }}
+            {% if form.raw_date.errors %}
+                <div class="text-danger">{{ form.raw_date.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div class="text-danger">{{ form.category.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+            {{ form.amount }}
+            {% if form.amount.errors %}
+                <div class="text-danger">{{ form.amount.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Type</label>
+            {{ form.type }}
+            {% if form.type.errors %}
+                <div class="text-danger">{{ form.type.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'transaction-list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
 {% endblock %}
