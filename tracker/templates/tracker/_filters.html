@@ -1,10 +1,10 @@
 <!-- Sorting controls -->
 <p>
     Sort by:
-    <a href="?sort=amount&{{ querystring }}">Sort by Amount ↑</a>
-    <a href="?sort=-amount&{{ querystring }}">Sort by Amount ↓</a>
-    <a href="?sort=date&{{ querystring }}">Sort by Date ↑</a>
-    <a href="?sort=-date&{{ querystring }}">Sort by Date ↓</a>
+    <a href="?sort=amount&{{ querystring_no_sort }}">Sort by Amount ↑</a>
+    <a href="?sort=-amount&{{ querystring_no_sort }}">Sort by Amount ↓</a>
+    <a href="?sort=date&{{ querystring_no_sort }}">Sort by Date ↑</a>
+    <a href="?sort=-date&{{ querystring_no_sort }}">Sort by Date ↓</a>
 </p>
 
 <!-- Filtering form -->
@@ -31,5 +31,8 @@
     <label for="end_date">To:</label>
     <input type="date" name="end_date" value="{{ request.GET.end_date }}">
 
+    <!-- # filter button -->
     <button type="submit">Filter</button>
+    <!-- # reset link  -->
+    <a href="{% url 'transaction-list' %}" class="reset-btn">Reset</a>
 </form>

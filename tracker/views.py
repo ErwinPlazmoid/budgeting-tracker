@@ -56,11 +56,15 @@ class TransactionListView(ListView):
 
         # Keep current filters/sort in querystring (except page)
         params = self.request.GET.copy()
-        if "page" in params:
-            params.pop("page")  # prevent multiple page params
-        if "sort" in params:
-            params.pop("sort")  # prevent duplicate sort params
+
+        # For pagination: keep filters & sort, drop page
+        params.pop("page", None)
         context["querystring"] = params.urlencode()
+
+        # For sorting links: keep filters, drop page and old sort
+        params_no_sort = params.copy()
+        params_no_sort.pop("sort", None)
+        context["querystring_no_sort"] = params_no_sort.urlencode()
 
         return context
 

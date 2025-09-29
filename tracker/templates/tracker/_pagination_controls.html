@@ -7,6 +7,12 @@
         <option value="50" {% if request.GET.page_size == '50' %}selected{% endif %}>50</option>
         <option value="100" {% if request.GET.page_size == '100' %}selected{% endif %}>100</option>
     </select>
+    <!-- Preserve filters/sort in hidden inputs -->
+    {% for key, value in request.GET.items %}
+        {% if key != "page" and key != "page_size" %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+    {% endfor %}
 </form>
 
 <!-- Pagination navigation -->
