@@ -1,0 +1,15 @@
+/* categories.css */
+table {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.btn {
+    border-radius: 4px;
+}

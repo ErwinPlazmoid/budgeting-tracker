@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from .models import Transaction, Category
 from django.db.models import Sum, Q
 from tracker.forms.transaction_form import TransactionForm
-from .mixins import MessageDeleteMixin, MessageCreateUpdateMixin
+from .mixins import MessageDeleteMixin, MessageCreateUpdateMixin, PaginateByMixin
 
 # Home
 class HomeView(TemplateView):
@@ -13,7 +13,7 @@ class HomeView(TemplateView):
 
 
 # Transactions
-class TransactionListView(ListView):
+class TransactionListView(PaginateByMixin, ListView):
     model = Transaction
     template_name = "tracker/transactions/list.html"
     context_object_name = "transactions"
@@ -68,13 +68,6 @@ class TransactionListView(ListView):
 
         return context
 
-    def get_paginate_by(self, queryset):
-        # Get "page_size" from query params (?page_size=20)
-        page_size = self.request.GET.get("page_size")
-        if page_size in ["10", "20", "50", "100"]:
-            return int(page_size)
-        return 10  # default
-
 
 class TransactionCreateView(MessageCreateUpdateMixin, CreateView):
     model = Transaction
@@ -109,7 +102,7 @@ class TransactionDeleteView(MessageDeleteMixin, DeleteView):
 
 
 # Categories
-class CategoryListView(ListView):
+class CategoryListView(PaginateByMixin, ListView):
     model = Category
     template_name = "tracker/categories/list.html"
     context_object_name = "categories"

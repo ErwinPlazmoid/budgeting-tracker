@@ -27,3 +27,17 @@ class MessageDeleteMixin:
     def post(self, request, *args, **kwargs):
         messages.warning(request, self.success_message)
         return super().post(request, *args, **kwargs)
+
+
+class PaginateByMixin:
+    """
+    To allow ?page_size=20 style pagination.
+    Falls back to the class-defined paginate_by if missing.
+    """
+
+    def get_paginate_by(self, queryset):
+        page_size = self.request.GET.get("page_size")
+        print("DEBUG: page_size param =", page_size)  # temporary debug
+        if page_size and page_size.isdigit():
+            return int(page_size)
+        return getattr(self, "paginate_by", None)
