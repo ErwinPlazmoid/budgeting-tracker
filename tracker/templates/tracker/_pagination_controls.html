@@ -1,5 +1,5 @@
 <!-- Page size selector -->
-<form method="get" style="margin-bottom: 1em;">
+<form method="get" class="page-size-form">
     <label for="page_size">Show:</label>
     <select name="page_size" id="page_size" onchange="this.form.submit()">
         <option value="10" {% if request.GET.page_size == '10' %}selected{% endif %}>10</option>
@@ -17,20 +17,20 @@
 
 <!-- Pagination navigation -->
 {% if page_obj.paginator.num_pages > 1 %}
-<div class="pagination">
+<div class="pagination-controls">
     {% if page_obj.has_previous %}
-        <a href="?page=1&{{ querystring }}">« First</a>
-        <a href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">‹ Prev</a>
+        <a href="?page=1&{{ querystring }}" class="btn">« First</a>
+        <a href="?page={{ page_obj.previous_page_number }}&{{ querystring }}" class="btn">‹ Prev</a>
     {% endif %}
 
-    <span>
+    <span class="page-info">
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
         (Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }})
     </span>
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Next ›</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}&{{ querystring }}">Last »</a>
+        <a href="?page={{ page_obj.next_page_number }}&{{ querystring }}" class="btn">Next ›</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&{{ querystring }}" class="btn">Last »</a>
     {% endif %}
 </div>
 {% endif %}
