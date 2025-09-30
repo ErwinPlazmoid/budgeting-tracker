@@ -1,38 +1,64 @@
-<!-- Sorting controls -->
-<p>
-    Sort by:
-    <a href="?sort=amount&{{ querystring_no_sort }}">Sort by Amount ↑</a>
-    <a href="?sort=-amount&{{ querystring_no_sort }}">Sort by Amount ↓</a>
-    <a href="?sort=date&{{ querystring_no_sort }}">Sort by Date ↑</a>
-    <a href="?sort=-date&{{ querystring_no_sort }}">Sort by Date ↓</a>
-</p>
+<div class="filters-container">
 
-<!-- Filtering form -->
-<form method="get" style="margin-bottom: 1em;">
-    <!-- Keep sorting when filtering -->
-    {% if request.GET.sort %}
-        <input type="hidden" name="sort" value="{{ request.GET.sort }}">
-    {% endif %}
-    {% if request.GET.page_size %}
-        <input type="hidden" name="page_size" value="{{ request.GET.page_size }}">
-    {% endif %}
+    <!-- Sorting controls -->
+    <div class="sort-controls mb-2">
+        <span class="me-2">Sort by:</span>
+        <a href="?sort=amount&{{ querystring_no_sort }}"
+            class="btn btn-sm {% if request.GET.sort == 'amount' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Amount ↑
+        </a>
 
-    <label for="category">Category:</label>
-    <select name="category" id="category" onchange="this.form.submit()">
-        <option value="">-- All --</option>
-        {% for c in categories %}
-            <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
-        {% endfor %}
-    </select>
+        <a href="?sort=-amount&{{ querystring_no_sort }}"
+            class="btn btn-sm {% if request.GET.sort == '-amount' %}btn-primary {% else %}btn-outline-primary{% endif %}">
+            Amount ↓
+        </a>
 
-    <label for="start_date">From:</label>
-    <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+        <a href="?sort=date&{{ querystring_no_sort }}"
+            class="btn btn-sm {% if request.GET.sort == 'date' %}btn-primary {% else %}btn-outline-primary{% endif %}">
+            Date ↑
+        </a>
 
-    <label for="end_date">To:</label>
-    <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+        <a href="?sort=-date&{{ querystring_no_sort }}"
+            class="btn btn-sm {% if request.GET.sort == '-date' %}btn-primary {% else %}btn-outline-primary{% endif %}">
+            Date ↓
+        </a>
+    </div>
 
-    <!-- # filter button -->
-    <button type="submit">Filter</button>
-    <!-- # reset link  -->
-    <a href="{% url 'transaction-list' %}" class="reset-btn">Reset</a>
-</form>
+    <!-- Filtering form -->
+    <form method="get" class="filter-form d-flex flex-wrap align-items-end gap-2">
+        <!-- Keep sorting/page size when filtering -->
+        {% if request.GET.sort %}
+            <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+        {% endif %}
+        {% if request.GET.page_size %}
+            <input type="hidden" name="page_size" value="{{ request.GET.page_size }}">
+        {% endif %}
+
+        <div>
+            <label for="category" class="form-label">Category</label>
+            <select name="category" id="category" class="form-select form-select-sm">
+                <option value="">-- All --</option>
+                {% for c in categories %}
+                    <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="start_date" class="form-label">From</label>
+            <input type="date" name="start_date" value="{{ request.GET.start_date }}" class="form-control form-control-sm">
+        </div>
+
+        <div>
+            <label for="end_date" class="form-label">To</label>
+            <input type="date" name="end_date" value="{{ request.GET.end_date }}" class="form-control form-control-sm">
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success btn-sm">Apply</button>
+            <a href="{% url 'transaction-list' %}" class="btn btn-outline-secondary btn-sm reset-btn">Reset</a>
+        </div>
+    </form>
+</div>
