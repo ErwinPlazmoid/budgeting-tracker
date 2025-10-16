@@ -46,9 +46,6 @@ INSTALLED_APPS = [
     "users",
 ]
 
-# Custom user model
-AUTH_USER_MODEL = "users.CustomUser"
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -75,6 +72,15 @@ TEMPLATES = [
         },
     },
 ]
+
+# Custom user model
+AUTH_USER_MODEL = "users.CustomUser"
+
+# Authentication redirects
+LOGIN_REDIRECT_URL = "home"  
+LOGOUT_REDIRECT_URL = "login"  
+LOGIN_URL = "login"
+
 
 WSGI_APPLICATION = "config.wsgi.application"
 
