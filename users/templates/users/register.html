@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Register - Budget Tracker{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 450px;">
+    <h2 class="mb-4 text-center">Create Account</h2>
+
+    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success w-100 mt-2">Register</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+</div>
+{% endblock %}

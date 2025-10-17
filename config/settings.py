@@ -31,9 +31,10 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
+# Custom user model
+AUTH_USER_MODEL = "users.CustomUser"
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -73,13 +74,13 @@ TEMPLATES = [
     },
 ]
 
-# Custom user model
-AUTH_USER_MODEL = "users.CustomUser"
-
 # Authentication redirects
 LOGIN_REDIRECT_URL = "home"  
 LOGOUT_REDIRECT_URL = "login"  
 LOGIN_URL = "login"
+
+# Email backend (for password reset emails)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 WSGI_APPLICATION = "config.wsgi.application"
