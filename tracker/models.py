@@ -2,11 +2,19 @@ from django.db import models
 from django.conf import settings
 from core.constants import INCOME, EXPENSE, TRANSACTION_TYPE_CHOICES
 
-# Create your models here.
-
 class Category(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="categories"
+        )
+    name = models.CharField(max_length=50)
     is_income = models.BooleanField(default=False) #True - income; False - expense
+
+    class Meta:
+        # 🔹 Unique per user instead of globally unique
+        unique_together = ("user", "name")
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -27,13 +35,35 @@ class Date(models.Model):
 
 
 class Transaction(models.Model):
-    # Don’t import User directly, always use settings.AUTH_USER_MODEL.
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    date = models.ForeignKey(Date, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="transactions"
+        )
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        related_name="transactions"
+        )
+    date = models.ForeignKey(
+        Date, 
+        on_delete=models.CASCADE
+        )
+    amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2
+        )
     description = models.TextField(blank=False)
-    type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES, default=EXPENSE)
+    type = models.CharField(
+        max_length=7, 
+        choices=TRANSACTION_TYPE_CHOICES, 
+        default=EXPENSE
+        )
+
+    class Meta:
+        ordering = ["-date__full_date"]
 
     def __str__(self):
         return f"{self.date.full_date} | {self.get_type_display()} | {self.category} | {self.amount}"

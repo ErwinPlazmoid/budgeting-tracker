@@ -6,6 +6,7 @@ from .models import Transaction, Category
 from django.db.models import Sum, Q
 from tracker.forms.transaction_form import TransactionForm
 from .mixins import MessageDeleteMixin, MessageCreateUpdateMixin, PaginateByMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Home
 class HomeView(TemplateView):
@@ -13,14 +14,17 @@ class HomeView(TemplateView):
 
 
 # Transactions
-class TransactionListView(PaginateByMixin, ListView):
+class TransactionListView(LoginRequiredMixin, PaginateByMixin, ListView):
     model = Transaction
     template_name = "tracker/transactions/list.html"
     context_object_name = "transactions"
     paginate_by = 10
+    login_url = "login"  
+    redirect_field_name = "next"
 
     def get_queryset(self):
-        qs = Transaction.objects.all()
+        # Show only transactions belonging to the current user
+        qs = Transaction.objects.filter(user=self.request.user)
 
         # Sorting
         sort = self.request.GET.get("sort")
@@ -30,10 +34,7 @@ class TransactionListView(PaginateByMixin, ListView):
             "amount": "amount",
             "-amount": "-amount"
         }
-        if sort in allowed_sorts:
-            qs = qs.order_by(allowed_sorts[sort])
-        else:
-            qs = qs.order_by("-date__full_date")
+        qs = qs.order_by(allowed_sorts.get(sort, "-date__full_date"))
 
         # Filter by category
         category_id = self.request.GET.get("category")
@@ -52,7 +53,8 @@ class TransactionListView(PaginateByMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["categories"] = Category.objects.all()
+        # Categories only for this user
+        context["categories"] = Category.objects.filter(user=self.request.user)
 
         # Keep current filters/sort in querystring (except page)
         params = self.request.GET.copy()
@@ -69,72 +71,113 @@ class TransactionListView(PaginateByMixin, ListView):
         return context
 
 
-class TransactionCreateView(MessageCreateUpdateMixin, CreateView):
+class TransactionCreateView(LoginRequiredMixin, MessageCreateUpdateMixin, CreateView):
     model = Transaction
     form_class = TransactionForm
     template_name = "tracker/transactions/add.html"
     success_url = reverse_lazy("transaction-list")
     success_message = "✅ Transaction created successfully!"
+    login_url = "login"
+    redirect_field_name = "next"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Pass logged-in user to form
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
-        # Later, tie to logged-in user.
-        # For now: just pick the first user in DB.
-        form.instance.user_id = 1
+        # Assign logged-in user
+        form.instance.user = self.request.user
         return super().form_valid(form)
 
 
-class TransactionUpdateView(MessageCreateUpdateMixin, UpdateView):
+class TransactionUpdateView(LoginRequiredMixin, MessageCreateUpdateMixin, UpdateView):
     model = Transaction
     form_class = TransactionForm
     template_name = "tracker/transactions/edit.html"
     success_url = reverse_lazy("transaction-list")
     success_message = "✏️ Transaction updated successfully!"
+    login_url = "login"
+    redirect_field_name = "next"
 
-    def form_valid(self, form):
-        return super().form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Pass logged-in user to form
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_queryset(self):
+        # Restrict editing to user's own transactions
+        return Transaction.objects.filter(user=self.request.user)
 
 
-class TransactionDeleteView(MessageDeleteMixin, DeleteView):
+class TransactionDeleteView(LoginRequiredMixin, MessageDeleteMixin, DeleteView):
     model = Transaction
     template_name = "tracker/transactions/delete.html"
     success_url = reverse_lazy("transaction-list")
     success_message = "🗑 Transaction deleted."
+    login_url = "login"
+    redirect_field_name = "next"
+
+    def get_queryset(self):
+        # Restrict deletion to user's own transactions
+        return Transaction.objects.filter(user=self.request.user)
 
 
 # Categories
-class CategoryListView(PaginateByMixin, ListView):
+class CategoryListView(LoginRequiredMixin, PaginateByMixin, ListView):
     model = Category
     template_name = "tracker/categories/list.html"
     context_object_name = "categories"
     paginate_by = 10
+    login_url = "login"
+    redirect_field_name = "next"
 
     def get_queryset(self):
-        # For now: return ALL categories
-        # Later: filter by self.request.user
-        return Category.objects.all().order_by("name")
+        # Filter only categories created by the logged-in user
+        return Category.objects.filter(user=self.request.user).order_by("name")
 
 
-class CategoryCreateView(MessageCreateUpdateMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, MessageCreateUpdateMixin, CreateView):
     model = Category
     template_name = "tracker/categories/add.html"
     fields = ["name"]
     success_url = reverse_lazy("category-list")
     success_message = "✅ Category created successfully!"
+    login_url = "login"
+    redirect_field_name = "next"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
-class CategoryUpdateView(MessageCreateUpdateMixin, UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, MessageCreateUpdateMixin, UpdateView):
     model = Category
     template_name = "tracker/categories/edit.html"
     fields = ["name"]
     success_url = reverse_lazy("category-list")
     success_message = "✏️ Category updated successfully!"
+    login_url = "login"
+    redirect_field_name = "next"
+
+    def get_queryset(self):
+        # Prevent editing categories that belong to another user
+        return Category.objects.filter(user=self.request.user)
 
 
-class CategoryDeleteView(MessageDeleteMixin, DeleteView):
+class CategoryDeleteView(LoginRequiredMixin, MessageDeleteMixin, DeleteView):
     model = Category
     template_name = "tracker/categories/delete.html"
     success_url = reverse_lazy("category-list")
     success_message = "🗑 Category deleted."
+    login_url = "login"
+    redirect_field_name = "next"
+
+    def get_queryset(self):
+        # Prevent deleting categories that belong to another user
+        return Category.objects.filter(user=self.request.user)
 
 
 # Analytics

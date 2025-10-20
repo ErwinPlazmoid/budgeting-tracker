@@ -1,5 +1,5 @@
 from django import forms
-from tracker.models import Transaction, Date
+from tracker.models import Transaction, Date, Category
 from core.constants import INCOME, EXPENSE, TRANSACTION_TYPE_CHOICES
 
 class TransactionForm(forms.ModelForm):
@@ -14,16 +14,23 @@ class TransactionForm(forms.ModelForm):
         label="Date",
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        if self.instance and self.instance.pk:
-            self.fields["raw_date"].initial = self.instance.date.full_date
 
     class Meta:
         model = Transaction
         fields = ["raw_date", "category", "description", "amount", "type"]
         widgets = {"type": forms.RadioSelect(choices=TRANSACTION_TYPE_CHOICES)}
+
+    def __init__(self, *args, **kwargs):
+        # Get user from the view
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+        # Filter categories by logged-in user
+        if self.user is not None:
+            self.fields["category"].queryset = Category.objects.filter(user=self.user)
+        # Pre-fill date if editing
+        if self.instance and self.instance.pk:
+            self.fields["raw_date"].initial = self.instance.date.full_date
 
     def clean_amount(self):
         amount = self.cleaned_data.get("amount")
